@@ -20,18 +20,18 @@ class MatrixDataManager:
             'matrix_a': matrix_a,
             'matrix_b': matrix_b
         }
-        with open(self.filepath, 'w') as file:
-            file.write('{\n')
-            file.write('    "rows": ' + str(rows) + ',\n')
-            file.write('    "columns": ' + str(columns) + ',\n')
-            file.write('    "matrix_a": [\n')
-            for row in matrix_a[:-1]:
-                file.write('        ' + json.dumps(row) + ',\n')
-            file.write('        ' + json.dumps(matrix_a[-1]) + '\n')
-            file.write('    ],\n')
-            file.write('    "matrix_b": [\n')
-            for row in matrix_b[:-1]:
-                file.write('        ' + json.dumps(row) + ',\n')
-            file.write('        ' + json.dumps(matrix_b[-1]) + '\n')
-            file.write('    ]\n')
-            file.write('}\n')
+        # with open(self.filepath, 'w') as file:
+        #     file.write('{\n')
+        #     file.write('    "rows": ' + str(rows) + ',\n')
+        #     file.write('    "columns": ' + str(columns) + ',\n')
+        #     file.write('    "matrix_a": [\n')
+        #     for row in matrix_a[:-1]:
+        #         file.write('        ' + json.dumps(row) + ',\n')
+        #     file.write('        ' + json.dumps(matrix_a[-1]) + '\n')
+        #     file.write('    ],\n')
+        #     file.write('    "matrix_b": [\n')
+        #     for row in matrix_b[:-1]:
+        #         file.write('        ' + json.dumps(row) + ',\n')
+        #     file.write('        ' + json.dumps(matrix_b[-1]) + '\n')
+        #     file.write('    ]\n')
+        #     file.write('}\n')

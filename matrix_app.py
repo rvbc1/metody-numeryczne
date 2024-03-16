@@ -3,6 +3,36 @@ import tkinter as tk
 from matrix_data_manager import MatrixDataManager
 from matrix_calculations import MatrixCalculations
 
+
+entry_bg = 'white'  # białe tło dla widoczności
+button_bg = 'grey'  # szare tło dla przycisku
+text_color = 'black'  # czarny tekst dla widoczności
+
+
+class GuiMatrix():
+    def __init__(self, frame, rows, columns):
+        super().__init__()
+        self.frame = frame
+        self.entries = []
+        self.rows = rows
+        self.columns = columns
+
+
+
+    def update_size(self, rows, columns):
+        for widget in self.frame.winfo_children():
+            widget.destroy()
+
+        entries = []
+        for i in range(rows):
+            row = []
+            for j in range(columns):
+                entry = tk.Entry(self.frame, width=5, bg=entry_bg, fg=text_color, borderwidth=2)
+                entry.grid(row=i, column=j, padx=1, pady=1)
+                row.append(entry)
+            entries.append(row)
+        self.entries = entries
+
 class MatrixApp(tk.Tk):
     def __init__(self, data_manager):
         super().__init__()
@@ -12,19 +42,14 @@ class MatrixApp(tk.Tk):
 
         self.center_window( self.winfo_screenwidth() / 4,  self.winfo_screenheight() / 4) 
 
-        self.entry_bg = 'white'  # białe tło dla widoczności
-        self.button_bg = 'grey'  # szare tło dla przycisku
-        self.text_color = 'black'  # czarny tekst dla widoczności
-
         # Pola do wprowadzania rozmiaru macierzy
         self.row_label = tk.Label(self, text="Niewiadome:")
         self.row_label.grid(row=0, column=0)
-        self.row_entry = tk.Entry(self, width=5, bg=self.entry_bg, fg=self.text_color)
+        self.row_entry = tk.Entry(self, width=5, bg=entry_bg, fg=text_color)
         self.row_entry.grid(row=0, column=1)
 
-
         # Przycisk do ustawiania rozmiaru macierzy
-        self.set_size_btn = tk.Button(self, text="Set Matrix Size", command=self.set_matrix_size, bg=self.button_bg, fg=self.text_color)
+        self.set_size_btn = tk.Button(self, text="Set Matrix Size", command=self.set_matrix_size, bg=button_bg, fg=text_color)
         self.set_size_btn.grid(row=0, column=2, columnspan=1)
 
         self.matrix_a_frame = tk.Frame(self)  # Ramka na macierz a
@@ -36,22 +61,25 @@ class MatrixApp(tk.Tk):
         self.columnconfigure(3, minsize=30)
 
         # Przycisk do aktualizacji macierzy
-        self.update_btn = tk.Button(self, text="Update Matrix", command=self.update_matrix, bg=self.button_bg, fg=self.text_color)
+        self.update_btn = tk.Button(self, text="Update Matrix", command=self.update_matrix, bg=button_bg, fg=text_color)
         self.update_btn.grid(row=4, column=0, columnspan=2)
 
         self.matrix_label = tk.Label(self, text="Matrix Values: ", fg='grey')
         self.matrix_label.grid(row=5, column=0, columnspan=2)
 
-        self.entries = []
-        self.entries2 = []
+        self.m1 = GuiMatrix(self.matrix_a_frame, 3, 3)
+        self.m2 = GuiMatrix(self.matrix_b_frame, 3, 1)
+
+        self.m1.update_size(3, 3)
+        self.m2.update_size(3, 1)
 
         # Ładowanie danych z pliku przy starcie
-        rows, columns, matrix_a_data, matrix_b_data = self.data_manager.load_data()
-        self.row_entry.insert(0, str(rows))
-        # self.column_entry.insert(0, str(columns))
-        self.set_matrix_size()  # Ustaw rozmiar macierzy
-        self.fill_matrix(matrix_a_data, self.entries)  # Wypełnij macierz danymi
-        self.fill_matrix(matrix_b_data, self.entries2)  # Wypełnij macierz danymi
+        # rows, columns, matrix_a_data, matrix_b_data = self.data_manager.load_data()
+        # self.row_entry.insert(0, str(rows))
+        # # self.column_entry.insert(0, str(columns))
+        # self.set_matrix_size()  # Ustaw rozmiar macierzy
+        # self.fill_matrix(matrix_a_data, self.entries)  # Wypełnij macierz danymi
+        # self.fill_matrix(matrix_b_data, self.entries2)  # Wypełnij macierz danymi
 
     def center_window(self, width=300, height=200):
         # Obliczenie współrzędnych środka ekranu
@@ -67,8 +95,8 @@ class MatrixApp(tk.Tk):
     def set_matrix_size(self):
         rows = int(self.row_entry.get())
         columns = int(self.row_entry.get())
-        self.update_array(rows, columns, self.matrix_a_frame, self.entries)
-        self.update_array(1, 1, self.matrix_b_frame, self.entries2)
+        self.m1.update_size(rows, rows)
+        self.m2.update_size(rows, 1)
 
     def update_array(self, rows, columns, frame, entries2):
         # Usuwamy wszystkie poprzednie Entry z ramki
@@ -79,7 +107,7 @@ class MatrixApp(tk.Tk):
         for i in range(rows):
             row = []
             for j in range(columns):
-                entry = tk.Entry(self.matrix_a_frame, width=5, bg=self.entry_bg, fg=self.text_color, borderwidth=2)
+                entry = tk.Entry(frame, width=5, bg=self.entry_bg, fg=self.text_color, borderwidth=2)
                 entry.grid(row=i, column=j, padx=1, pady=1)
                 row.append(entry)
             entries2.append(row)
@@ -104,6 +132,10 @@ class MatrixApp(tk.Tk):
     def update_matrix(self):
         rows = len(self.entries)
         columns = len(self.entries[0]) if self.entries else 0
+
+        rows2 = len(self.entries2)
+        columns2 = len(self.entries2[0]) if self.entries2 else 0
+
         matrix = []
 
         matrix2 = []
@@ -120,24 +152,28 @@ class MatrixApp(tk.Tk):
                 matrix_row.append(cell_value)
             matrix.append(matrix_row)
 
-        for i in range(rows):
+        for i in range(rows2):
             matrix_row = []
-            cell_value = self.entries2[0][0].get()
-            # Próba konwersji wartości komórki na liczbę zmiennoprzecinkową
-            try:
-                cell_value = float(cell_value)
-            except ValueError:
-                cell_value = 0.0  # Ustawiamy 0.0 jeśli konwersja nie powiedzie się
-            matrix_row.append(cell_value)
-        matrix2.append(matrix_row)
+            for j in range(columns2):
+                cell_value = self.entries2[i][j].get()
+                # Próba konwersji wartości komórki na liczbę zmiennoprzecinkową
+                try:
+                    cell_value = float(cell_value)
+                except ValueError:
+                    cell_value = 0.0  # Ustawiamy 0.0 jeśli konwersja nie powiedzie się
+                matrix_row.append(cell_value)
+            matrix2.append(matrix_row)
 
+
+        print(matrix)
+        print(matrix2)
 
         # Zapisywanie do pliku JSON (nadpisujemy funkcję save_data, aby obsługiwała liczby całkowite)
         self.data_manager.save_data(rows, columns, matrix, matrix2)
 
         # Aktualizowanie etykiety z wartościami macierzy
-        norm = MatrixCalculations().normalize(matrix)
-        values = "\n".join([" ".join(map(lambda x: f"{x:.2f}", row)) for row in norm])
+#        norm = MatrixCalculations().normalize(matrix)
+        values = "\n".join([" ".join(map(lambda x: f"{x:.2f}", row)) for row in matrix])
         self.matrix_label.config(text="Matrix Values:\n" + values)
 
   
