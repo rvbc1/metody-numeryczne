@@ -13,7 +13,9 @@ class MatrixDataManager:
         except:
             return 3, [['' for _ in range(3)] for _ in range(3)], [['' for _ in range(1)] for _ in range(3)]  
 
-    def save_data(self, unknowns, matrix_a, matrix_b):
+    def save_data(self, unknowns, matrixA, matrixB):
+        matrix_a = matrixA.getData()
+        matrix_b = matrixB.getData()
         data = {
             'unknowns': unknowns,
             'matrix_a': matrix_a,

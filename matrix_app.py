@@ -1,7 +1,7 @@
 # matrix_app.py
 import tkinter as tk
 from matrix_data_manager import MatrixDataManager
-from matrix_calculations import *
+from matrix_calculations import Matrix, MatrixCalculations
 
 
 entry_bg = 'white' 
@@ -14,38 +14,35 @@ class GuiMatrix():
         super().__init__()
         self.frame = frame
         self.entries = []
-        self.rows = rows
-        self.columns = columns
+        self._matrix = Matrix()
 
+    def getRows(self):
+        return self._matrix.getRows()
+    
+    def getColumns(self):
+        return self._matrix.getColumns()
 
+    def setMatrixData(self, matrix):
+        self._matrix.setData(matrix)
+        self._updateSize()
+        self._updateEntries()
 
-    def setSize(self, rows, columns):
+    def getMatrix(self):
+        return self._matrix
+    
+    def _updateSize(self):
         for widget in self.frame.winfo_children():
             widget.destroy()
 
         entries = []
-        for i in range(rows):
+        for i in range(self._matrix.getRows()):
             row = []
-            for j in range(columns):
+            for j in range(self._matrix.getColumns()):
                 entry = tk.Entry(self.frame, width=5, bg=entry_bg, fg=text_color, borderwidth=2)
                 entry.grid(row=i, column=j, padx=1, pady=1)
                 row.append(entry)
             entries.append(row)
         self.entries = entries
-
-    def getRows(self):
-        return self.rows
-    
-    def getColumns(self):
-        return self.columns
-
-    def setData(self, matrix):
-        self.matrix = matrix
-        self.setSize(len(matrix), len(matrix[0]))
-        self._updateEntries(matrix)
-
-    def getData(self):
-        return self.matrix
 
     def updateData(self):  
         print(":)")
@@ -68,8 +65,8 @@ class GuiMatrix():
 
         self.matrix = matrix
 
-    def _updateEntries(self, matrix):
-        for i, row in enumerate(matrix):
+    def _updateEntries(self):
+        for i, row in enumerate(self._matrix.getData()):
             for j, value in enumerate(row):
                 if i < len(self.entries) and j < len(self.entries[i]):
                     self.entries[i][j].insert(0, value)
@@ -91,8 +88,8 @@ class MatrixApp(tk.Tk):
 
         self.unknowns, matrix_a_data, matrix_b_data = self.data_manager.load_data()
         
-        self.m1.setData(matrix_a_data)
-        self.m2.setData(matrix_b_data)
+        self.m1.setMatrixData(matrix_a_data)
+        self.m2.setMatrixData(matrix_b_data)
         self.row_entry.insert(0, str(self.unknowns))
        
 
@@ -134,24 +131,21 @@ class MatrixApp(tk.Tk):
 
     def set_matrix_size(self):
         self.unknowns = int(self.row_entry.get())
-        self.m1.setSize(self.unknowns, self.unknowns)
-        self.m2.setSize(self.unknowns, 1)
+        self.m1.setMatrixData(self.m1.getMatrix().changeShape(self.unknowns, self.unknowns))
+        self.m2.setMatrixData(self.m2.getMatrix().changeShape(self.unknowns, 1))
 
                     
     def update_matrix(self):
         self.m1.updateData()
         self.m2.updateData()
 
-        print(self.m1.getData())
-        print(self.m2.getData())
+        self.data_manager.save_data(self.unknowns, self.m1.getMatrix(), self.m2.getMatrix())
 
-        self.data_manager.save_data(self.unknowns, self.m1.getData(), self.m2.getData())
-
-
-        values = "\n".join([" ".join(map(lambda x: f"{x:.2f}", row)) for row in self.m1.getData()])
+        
+        values = "\n".join([" ".join(map(lambda x: f"{x:.2f}", row)) for row in self.m1.getMatrix().getData()])
         self.matrix_label.config(text="Matrix Values:\n" + values)
 
-        x = met_gaussa(np.array(self.m1.getData()), np.array(self.m2.getData()))
+        x = MatrixCalculations.met_gaussa(self.m1.getMatrix(), self.m2.getMatrix())
         print(x)
 
   
