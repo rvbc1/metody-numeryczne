@@ -1,7 +1,7 @@
 # matrix_app.py
 import tkinter as tk
 from matrix_data_manager import MatrixDataManager
-from matrix_calculations import MatrixCalculations
+from matrix_calculations import *
 
 
 entry_bg = 'white' 
@@ -133,10 +133,9 @@ class MatrixApp(tk.Tk):
         self.geometry('%dx%d+%d+%d' % (width, height, x, y))
 
     def set_matrix_size(self):
-        rows = int(self.row_entry.get())
-        columns = int(self.row_entry.get())
-        self.m1.setSize(rows, rows)
-        self.m2.setSize(rows, 1)
+        self.unknowns = int(self.row_entry.get())
+        self.m1.setSize(self.unknowns, self.unknowns)
+        self.m2.setSize(self.unknowns, 1)
 
                     
     def update_matrix(self):
@@ -151,6 +150,9 @@ class MatrixApp(tk.Tk):
 
         values = "\n".join([" ".join(map(lambda x: f"{x:.2f}", row)) for row in self.m1.getData()])
         self.matrix_label.config(text="Matrix Values:\n" + values)
+
+        x = met_gaussa(np.array(self.m1.getData()), np.array(self.m2.getData()))
+        print(x)
 
   
 

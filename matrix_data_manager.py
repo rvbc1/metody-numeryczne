@@ -11,7 +11,7 @@ class MatrixDataManager:
                 data = json.load(file)
             return data.get('unknowns'), data.get('matrix_a'), data.get('matrix_b')
         except:
-            return 3, [['' for _ in range(3)] for _ in range(3)], [['' for _ in range(1)] for _ in range(3)]  # Zwraca domyślną macierz 3x3 jeśli plik nie istnieje
+            return 3, [['' for _ in range(3)] for _ in range(3)], [['' for _ in range(1)] for _ in range(3)]  
 
     def save_data(self, unknowns, matrix_a, matrix_b):
         data = {
