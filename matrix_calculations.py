@@ -99,26 +99,51 @@ class MatrixCalculations:
         X_transponowana = [[x] for x in X]
         return X_transponowana
 
+    # def simple_iteration_method(matrixA, matrixB, tolerance=1e-10, max_iterations=1000):
+    #     A = matrixA.getData()
+    #     B = matrixB.getData()
+    #     n = len(A)
+    #     X = [0 for _ in range(n)]
+    #     X_new = X.copy()
+
+    #     for _ in range(max_iterations):
+    #         for i in range(n):
+    #             sum_ = B[i][0]
+    #             for j in range(n):
+    #                 if i != j:
+    #                     sum_ -= A[i][j] * X[j]
+    #             X_new[i] = sum_ / A[i][i]
+
+    #         if all(abs(X_new[i] - X[i]) < tolerance for i in range(n)):
+    #             return X_new
+    #         X = X_new.copy()
+
+    #     return X # No solution found within max_iterations
     def simple_iteration_method(matrixA, matrixB, tolerance=1e-10, max_iterations=1000):
         A = matrixA.getData()
         B = matrixB.getData()
         n = len(A)
-        X = [0 for _ in range(n)]
-        X_new = X.copy()
+        X = [0 for _ in range(n)]  # Początkowe przybliżenie rozwiązania
+        X_new = [0 for _ in range(n)]  # Nowe przybliżenie rozwiązania
 
-        for _ in range(max_iterations):
+        for iteration in range(max_iterations):
             for i in range(n):
-                sum_ = B[i][0]
+                suma = B[i][0]  # Przyjmujemy, że B to macierz kolumnowa (n, 1)
                 for j in range(n):
                     if i != j:
-                        sum_ -= A[i][j] * X[j]
-                X_new[i] = sum_ / A[i][i]
+                        suma -= A[i][j] * X[j]
+                X_new[i] = suma / A[i][i]
 
-            if all(abs(X_new[i] - X[i]) < tolerance for i in range(n)):
-                return X_new
-            X = X_new.copy()
+            # Sprawdzenie kryterium zbieżności
+            diff = max(abs(X_new[i] - X[i]) for i in range(n))
+            if diff < tolerance:
+                print(f"Metoda zbiegła po {iteration + 1} iteracjach.")
+                return [[x] for x in X_new]  # Zwraca nowe przybliżenie jako macierz kolumnową
 
-        return X # No solution found within max_iterations
+            X = X_new[:]  # Aktualizacja przybliżenia
+
+        print("Maksymalna liczba iteracji została przekroczona.")
+        return [[x] for x in X]  # Zwraca ostatnie przybliżenie jako macierz kolumnową
     
     def lu_decomposition_doolittle(matrixA):
         A = matrixA.getData()

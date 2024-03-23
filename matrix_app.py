@@ -50,7 +50,6 @@ class GuiMatrix():
         self.entries = entries
 
     def updateData(self):  
-        print(":)")
         rows = len(self.entries)
         columns = len(self.entries[0]) if self.entries else 0
 
@@ -170,12 +169,23 @@ class MatrixApp(tk.Tk):
         self.data_manager.save_data(self.unknowns, self.matrixA.getMatrix(), self.matrixB.getMatrix())
 
         
-        values = "\n".join([" ".join(map(lambda x: f"{x:.2f}", row)) for row in self.matrixA.getMatrix().getData()])
-        self.matrix_label.config(text="Matrix Values:\n" + values)
+        # values = "\n".join([" ".join(map(lambda x: f"{x:.2f}", row)) for row in self.matrixA.getMatrix().getData()])
+        # self.matrix_label.config(text="Matrix Values:\n" + values)
 
         
         self.matrixX.setMatrixData(MatrixCalculations.met_gaussa_transponowana(self.matrixA.getMatrix(), self.matrixB.getMatrix()))
         print(MatrixCalculations.simple_iteration_method(self.matrixA.getMatrix(), self.matrixB.getMatrix()))
+
+        a = Matrix()
+        a.setData([[4, -1, 0, 0], [-1, 4, -1, 0], [0, -1, 4, -1], [0, 0, -1, 3]])
+
+        b = Matrix()
+        b.setData([[15], [10], [10], [10]])
+        #A = [[4, -1, 0, 0], [-1, 4, -1, 0], [0, -1, 4, -1], [0, 0, -1, 3]]
+        #B = [[15], [10], [10], [10]]
+
+        X_transponowana = MatrixCalculations.simple_iteration_method(a, b)
+        print("Rozwiązanie (X transponowana):", X_transponowana)
 
 
 
